@@ -3,6 +3,23 @@ import json
 import pandas as pd
 
 connection=True
+test_url = "https://www.google.com"
+timeout = 5
+ap = 'https://api.exchangerate-api.com/v4/latest/USD'
+try:
+    request = requests.get(test_url, timeout=timeout)
+    connection=True
+    with open('rates.txt', 'w') as outfile:
+        json.dump(CurrencyConverter_online(ap).data, outfile)
+
+except (requests.ConnectionError, requests.Timeout) as exception:
+    connection=False
+    print("No internet connection.")
+
+with open('rates.txt') as json_file:
+    data = json.load(json_file)
+
+
 class CurrencyConverter_online():
     def __init__(self,url):
         self.data= requests.get(url).json()
@@ -11,6 +28,7 @@ class CurrencyConverter_online():
 
 class CurrencyConverter():
     if connection==True:
+        print(connection)
         def __init__(self,url,rates):
             self.data= requests.get(url).json()
             self.currencies = self.data['rates']
@@ -43,23 +61,8 @@ class CurrencyConverter():
 
 
 
-test_url = "https://www.google.com"
-timeout = 5
-ap = 'https://api.exchangerate-api.com/v4/latest/USD'
-try:
-    request = requests.get(test_url, timeout=timeout)
-    connection=True
-    with open('rates.txt', 'w') as outfile:
-        json.dump(CurrencyConverter_online(ap).data, outfile)
 
-except (requests.ConnectionError, requests.Timeout) as exception:
-    connection=False
-    print("No internet connection.")
-
-with open('rates.txt') as json_file:
-    data = json.load(json_file)
-
-
+print(connection)
 converter=CurrencyConverter(ap,data)
 print("Here is the list of currency codes, please select the ones you want")
 #with open('codes-all.json') as json_file:
@@ -71,4 +74,4 @@ fromcurr = input("Please enter the currency you want to convert from in caps: ")
 tocurr = input ("Please enter the currency you want to convert to in caps: ")
 amountcurr = input ("Please enter the amount of money you want to convert: ")
 print(converter.time)
-print(amountcurr +fromcurr + " is equal to " +str(converter.convert(fromcurr,tocurr,float(amountcurr)))+tocurr+", this was last updated on: " +str(converter.time))
+print(amountcurr +fromcurr + " is equal to " +str(converter.convert(fromcurr,tocurr,float(amountcurr)))+tocurr+", using exchange rate of the date: " +str(converter.time))

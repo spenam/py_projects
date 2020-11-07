@@ -3,6 +3,23 @@ import json
 import pandas as pd
 
 connection=True
+test_url = "https://www.google.com"
+timeout = 5
+ap = 'https://api.exchangerate-api.com/v4/latest/USD'
+try:
+    request = requests.get(test_url, timeout=timeout)
+    connection=True
+    with open('rates.txt', 'w') as outfile:
+        json.dump(CurrencyConverter_online(ap).data, outfile)
+
+except (requests.ConnectionError, requests.Timeout) as exception:
+    connection=False
+    print("No internet connection.")
+
+with open('rates.txt') as json_file:
+    data = json.load(json_file)
+
+
 class CurrencyConverter_online():
     def __init__(self,url):
         self.data= requests.get(url).json()
@@ -42,22 +59,6 @@ class CurrencyConverter():
             return amount
 
 
-
-test_url = "https://www.google.com"
-timeout = 5
-ap = 'https://api.exchangerate-api.com/v4/latest/USD'
-try:
-    request = requests.get(test_url, timeout=timeout)
-    connection=True
-    with open('rates.txt', 'w') as outfile:
-        json.dump(CurrencyConverter_online(ap).data, outfile)
-
-except (requests.ConnectionError, requests.Timeout) as exception:
-    connection=False
-    print("No internet connection.")
-
-with open('rates.txt') as json_file:
-    data = json.load(json_file)
 
 
 converter=CurrencyConverter(ap,data)
